@@ -12,6 +12,12 @@
 		"help": "gem [gem-name]",
 		"description": "Fetches details of the specified Ruby gem"
 	},
+	"scraper": {
+		"alias": ["scrape", "checkAddress"],
+		"endpoint": "#",
+		"help": "scrape",
+		"description": "See if the website is up and ether address is correct"
+	},
 
 	"error": {
 		"exclude": true

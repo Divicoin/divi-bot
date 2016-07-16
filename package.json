@@ -4,7 +4,9 @@
   "description": "Sample app to show working with slack-terminalize module",
   "main": "index.js",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "request": "^2.65.0",
+    "require": "^2.4.20",
     "slack-terminalize": "^1.0.0"
   },
   "scripts": {
