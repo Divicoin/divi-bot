@@ -1,7 +1,4 @@
-# slack-sample-cli
-
-Sample app to work with [slack-terminalize](https://www.npmjs.com/package/slack-terminalize "slack terminalize at npm") with some basic custom commands
-
+# Divi-Bot
 # Setup
 
 - Run `npm install` to install the dependencies
