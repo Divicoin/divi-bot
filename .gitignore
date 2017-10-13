@@ -27,3 +27,5 @@ build/Release
 node_modules
 .idea
 keys.json
+keys.json.dev
+keys.json.prod
