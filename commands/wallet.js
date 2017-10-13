@@ -1,53 +1,63 @@
-// Parses our HTML and helps us find elements
+var _ = require("lodash");
 var cheerio = require("cheerio");
-// Makes HTTP request for HTML page
 var request = require("request");
 var util 	= require('../util');
 var info = "";
-// An empty array to save the data that we'll scrape
 var result = [];
-module.exports = function (param) {
-  var channel = param.channel;
-  // First, tell the console what server.js is doing
-  console.log("\n***********************************\n" +
-      +"\nscraping abax\n"+
-      "\n***********************************\n");
-
-  // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
+var scrapeEtherscanForCurrentTotal = (totalSent, callBack, channel) => {
   request("https://etherscan.io/address/0x13f11c9905a08ca76e3e853be63d4f0944326c72", function (error, response, html) {
 
-    // Load the HTML into cheerio and save it to a variable
-    // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
     var $ = cheerio.load(html);
+    var re = /\d*\.\d*/;
+    var currentWallet;
+    var totalRaised;
 
 
-    // With cheerio, find each p-tag with the "title" class
-    // (i: iterator. element: the current element)
     $("#ContentPlaceHolder1_divSummary div table tbody tr td:nth-child(2)").each(function (i, element) {
-      // console.log('element', element);
-      // Save the text of the element in a "title" variable
-      // var result = $(element).text();
       result.push($(element).text());
       console.log('result', result);
-      // var correctAddress = title.search('0x13f11C9905A08ca76e3e853bE63D4f0944326C72') !== -1;
-
-      // In the currently selected element, look at its child elements (i.e., its a-tags),
-      // then save the values for any "href" attributes that the child elements may have
-      // var link = $(element).children().attr("href");
-
-      // Save these results in an object that we'll push into the results array we defined earlier
-      // results.push({
-      //   title: title,
-      //   correctAddress
-      // });
     });
 
-    // Log the results once you've looped through each of the elements found with cheerio
-    console.log(result);
-    // info = `Divi account total: ${result[0]}`
-    info = `${result[0]}${result[1]}${result[2]}`
-    // info = result.join('\n')
+    currentWallet = _.round(re.exec(result[0]), 2);
+    totalRaised = currentWallet + totalSent;
 
-    util.postMessage(channel, info);
+
+    request('https://api.etherscan.io/api?module=stats&action=ethprice&apikey=7NU4FJ7QBV34YA8A662KRBZPHRCBETVNPMA', (err, res, body) => {
+      var ethusd = JSON.parse(res.body).result.ethusd;
+      var totalRaisedUsd = _.round((totalRaised* ethusd), 2);
+      info =
+        `The current total raised is:
+          ${totalRaised} Ether
+          $${totalRaisedUsd}` +
+          `\nThe current wallet holds:
+          ${_.trim(result[0], '\n')}
+          ${_.trim(result[1], '\n')}` +
+          `\nThere has been:
+          ${_.trim(result[2], '\n')}` +
+          `\nThe current ethereum price from etherscan is:
+          ${ethusd} ETH/USD`
+      console.log('result', result);
+      util.postMessage(channel, info, true);
+    })
   });
+}
+var scrapeEtherchainForSentTransactionsTotal = (callback, channel) => {
+  var sentResults = []
+  request("https://etherchain.org/account/0x13f11c9905a08ca76e3e853be63d4f0944326c72#txsent", (error, response, html) => {
+    var $ = cheerio.load(html);
+    $('#txsent div table.table tbody tr td:nth-child(3)').each((i, element) => {
+      var text = $(element).text();
+      text = /^[^ ]*/.exec(text)[0];
+      sentResults.push(Number(text));
+    })
+    scrapeEtherscanForCurrentTotal(_.sum(sentResults), callback, channel);
+  })
+
+}
+module.exports = function (param) {
+  var channel = param.channel;
+  console.log("\n***********************************\n" +
+      +"\nscrapping\n"+
+      "\n***********************************\n");
+  scrapeEtherchainForSentTransactionsTotal(null, channel);
 }
