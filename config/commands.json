@@ -1,19 +1,17 @@
 {
-	"help": {
+	"!help": {
 		"alias": [ "halp" ],
 		"endpoint": "#",
 		"help": "help [command](optional)",
 		"description": "To get help on all supported commands, or a specified command"
 	},
-
-
-	"scraper": {
+	"!scraper": {
 		"alias": ["scrape", "checkAddress"],
 		"endpoint": "#",
 		"help": "scrape",
 		"description": "See if the website is up and ether address is correct"
 	},
-	"wallet": {
+	"!wallet": {
 		"alias": ["Wallet"],
 		"endpoint": "#",
 		"help": "wallet",
