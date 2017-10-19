@@ -11,6 +11,11 @@
 		"help": "scrape",
 		"description": "See if the website is up and ether address is correct"
 	},
+  "!w2": {
+		"endpoint": "#",
+		"help": "wallet",
+		"description": "Displays current Eth in the Divi Wallet"
+	},
 	"!wallet": {
 		"alias": ["Wallet"],
 		"endpoint": "#",
